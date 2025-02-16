@@ -16,7 +16,7 @@ const VerifyEmail = () => {
       }
 
       try {
-        const response = await axios.get(`http://localhost:3000/users/verify?token=${token}`);
+        const response = await axios.get(`http://localhost:3000/verify?token=${token}`);
         
         setSuccess(true);
         setMessage(response.data.message);

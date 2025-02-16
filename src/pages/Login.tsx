@@ -24,9 +24,12 @@ const Login = () => {
         },
       });
 
+      if (response.data.redirect) {
+        window.location.href = response.data.redirect;
+      }
+
       if (response.status == 200) {
         console.log("Login successful:", response.data);
-        window.location.href = "/dashboard";
       }
     } catch (error) {
       console.log(error);
