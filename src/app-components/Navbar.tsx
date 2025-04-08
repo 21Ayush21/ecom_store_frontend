@@ -10,16 +10,37 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import axios from "axios";
+import { useEffect } from "react";
 
 const Navbar = () => {
   const { user, loading, logout } = useAuth();
+  
+  // Add debug logging
+  useEffect(() => {
+    console.log("Navbar rendered with user:", user);
+    console.log("Loading state:", loading);
+    
+    // Listen for auth state changes
+    const handleAuthStateChange = (event: CustomEvent) => {
+      console.log("Auth state changed event received:", event.detail);
+      // Force re-render by using a state update
+      if (event.detail.user) {
+        console.log("Forcing navbar update with new user data");
+      }
+    };
+    
+    window.addEventListener('auth-state-changed', handleAuthStateChange as EventListener);
+    
+    return () => {
+      window.removeEventListener('auth-state-changed', handleAuthStateChange as EventListener);
+    };
+  }, [user, loading]);
 
   const handleLogout = async () => {
     await logout();
   };
   return (
-    <header className="bg-white shadow-md flex flex-row justify-between items-center p-4 z-10">
+    <header className="bg-white shadow-md flex flex-row justify-between items-center p-4 z-10" key={user?.id || 'no-user'}>
       <h1 className="text-2xl font-bold">
         <Link to="/home">Logo</Link>
       </h1>

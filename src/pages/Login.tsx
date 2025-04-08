@@ -5,16 +5,23 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AuthCredentialsValidator } from "@/lib/AuthCredentialsValidator";
 import axios from "axios";
+import { useState } from "react";
+import { z } from "zod";
+
+type AuthCredentialsValidatorType = z.infer<typeof AuthCredentialsValidator>;
 
 const Login = () => {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm({ resolver: zodResolver(AuthCredentialsValidator) });
+  } = useForm<AuthCredentialsValidatorType>({ resolver: zodResolver(AuthCredentialsValidator) });
 
-  const loginSubmit = async (data: any) => {
+  const [error, setError] = useState<string | null>(null);
+
+  const loginSubmit = async (data: AuthCredentialsValidatorType) => {
     try {
+      setError(null)
       console.log("Sending request with data:", data);
       const response = await axios.post("http://localhost:3000/auth", data, {
         withCredentials: true,
@@ -24,17 +31,39 @@ const Login = () => {
         },
       });
 
-      if (response.data.redirect) {
-        window.location.href = response.data.redirect;
-      }
+      if(response.data){
+        console.log("Login Successful", response.data)
 
-      if (response.status == 200) {
-        console.log("Login successful:", response.data);
+        // Check if response contains tokens
+        if (response.data.accessToken && response.data.refreshToken) {
+          const {accessToken, refreshToken} = response.data;
+          console.log("Tokens received");
+          
+          // Store tokens in localStorage
+          localStorage.setItem("accessToken", accessToken);
+          localStorage.setItem("refreshToken", refreshToken);
+        } else if (response.data.user) {
+          // If no tokens but we have user data, store that directly
+          console.log("User data received without tokens, storing user data directly");
+          localStorage.setItem("user", JSON.stringify(response.data.user));
+        }
+        
+        // Simply reload the page to force a complete re-render of all components
+        const redirectUrl = response.data.redirect || '/home';
+        window.location.href = redirectUrl;
+        return;
       }
+      
     } catch (error) {
-      console.log(error);
+      console.error(error);
+      if(axios.isAxiosError(error) ){
+        setError(error.response?.data?.message || "Login failed. Please check your credentials")
+      } else{
+        setError("An unexpected error occured")
+      }
     }
   };
+
   return (
     <div className="flex items-center justify-center h-screen relative">
       <form
@@ -70,6 +99,10 @@ const Login = () => {
         <p>
           Don't have an account? <a href="/signup">Sign Up</a>
         </p>
+        
+        {error && (
+          <div className="text-red-500 text-sm mt-2">{error}</div>
+        )}
       </form>
     </div>
   );

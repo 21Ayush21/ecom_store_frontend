@@ -17,7 +17,7 @@ const Signup = () => {
 
   const handleSignup = async (data:any) => {
     try {
-      const response = await axios.post("http://localhost:3000/signup", data, {
+      const response = await axios.post("http://localhost:3000/auth/signup", data, {
         withCredentials: true,
         headers: {
           "Content-Type": "application/json",
