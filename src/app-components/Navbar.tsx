@@ -1,46 +1,27 @@
-import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { ShoppingCart, User } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
 import {
-  DropdownMenuItem,
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuTrigger,
+  DropdownMenuItem,
   DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useEffect } from "react";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { useAuth } from "@/hooks/useAuth";
+import { ShoppingCart, User } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
   const { user, loading, logout } = useAuth();
-  
-  // Add debug logging
-  useEffect(() => {
-    console.log("Navbar rendered with user:", user);
-    console.log("Loading state:", loading);
-    
-    // Listen for auth state changes
-    const handleAuthStateChange = (event: CustomEvent) => {
-      console.log("Auth state changed event received:", event.detail);
-      // Force re-render by using a state update
-      if (event.detail.user) {
-        console.log("Forcing navbar update with new user data");
-      }
-    };
-    
-    window.addEventListener('auth-state-changed', handleAuthStateChange as EventListener);
-    
-    return () => {
-      window.removeEventListener('auth-state-changed', handleAuthStateChange as EventListener);
-    };
-  }, [user, loading]);
 
   const handleLogout = async () => {
     await logout();
   };
   return (
-    <header className="bg-white shadow-md flex flex-row justify-between items-center p-4 z-10" key={user?.id || 'no-user'}>
+    <header
+      className="bg-white shadow-md flex flex-row justify-between items-center p-4 z-10"
+      key={user?.id || "no-user"}
+    >
       <h1 className="text-2xl font-bold">
         <Link to="/home">Logo</Link>
       </h1>
@@ -62,15 +43,31 @@ const Navbar = () => {
                       {user.email}
                     </span>
                   </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <span className="font-lato font-medium text-sm">
+                      Verified: {user.isVerified ? "Yes" : "No"}
+                    </span>
+                  </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem>
-                    {" "}
                     <Link to="/profile">
                       <span className="font-lato font-medium text-sm">
                         Profile
                       </span>
                     </Link>
                   </DropdownMenuItem>
+                  {user.role === "seller" && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem>
+                        <Link to="/upload-product">
+                          <span className="font-lato font-medium text-sm">
+                            Upload Products
+                          </span>
+                        </Link>
+                      </DropdownMenuItem>
+                    </>
+                  )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem>
                     <Button

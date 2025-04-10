@@ -6,18 +6,27 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { AuthCredentialsValidator } from "@/lib/AuthCredentialsValidator";
 import { cn } from "@/lib/utils";
 import { Select ,SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
+import { z } from "zod";
+
+
+const SignupSchema = AuthCredentialsValidator.extend({
+  role: z.enum(['user','seller']).default('user')
+})
+
+type SignUpFormData = z.infer<typeof SignupSchema>
 
 const Signup = () => {
 
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
-  } = useForm({ resolver: zodResolver(AuthCredentialsValidator) });
+  } = useForm<SignUpFormData>({resolver: zodResolver(SignupSchema) ,  defaultValues: {role: "user"}});
 
-  const handleSignup = async (data:any) => {
+  const handleSignup = async (data:SignUpFormData) => {
     try {
-      const response = await axios.post("http://localhost:3000/auth/signup", data, {
+      const response = await axios.post("http://localhost:3000/api/auth/signup", data, {
         withCredentials: true,
         headers: {
           "Content-Type": "application/json",
@@ -68,7 +77,7 @@ const Signup = () => {
           {...register("password")}
         />
 
-        <Select>
+        <Select onValueChange={(value) => setValue("role", value as "user" | "seller")}>
           <SelectTrigger className="w-full border border-gray-300 rounded-lg p-1">
             <SelectValue placeholder="Role"/>
           </SelectTrigger>

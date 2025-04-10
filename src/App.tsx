@@ -7,6 +7,7 @@ import Dashboard from "./pages/Dashboard";
 import Home from "./pages/Home";
 import Landing from "./pages/Landing";
 import ProtectedRoute from "./app-components/ProtectedRoute";
+import { UploadProduct } from "./pages/UploadProduct";
 
 export default function App() {
   return (
@@ -19,6 +20,7 @@ export default function App() {
       <Route path='/dashboard' element={<ProtectedRoute><Dashboard/></ProtectedRoute>}/>
       <Route path="/home" element={<Home/>}/>
       <Route path='/' element={<Landing/>}/>
+      <Route path='/upload-product' element={<UploadProduct/>}/>
     </Routes>
     
     </>

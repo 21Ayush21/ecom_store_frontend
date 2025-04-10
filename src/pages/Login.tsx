@@ -1,29 +1,33 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { AuthCredentialsValidator } from "@/lib/AuthCredentialsValidator";
+import { cn } from "@/lib/utils";
+import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 
 type AuthCredentialsValidatorType = z.infer<typeof AuthCredentialsValidator>;
 
 const Login = () => {
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<AuthCredentialsValidatorType>({ resolver: zodResolver(AuthCredentialsValidator) });
+  } = useForm<AuthCredentialsValidatorType>({
+    resolver: zodResolver(AuthCredentialsValidator),
+  });
 
   const [error, setError] = useState<string | null>(null);
 
   const loginSubmit = async (data: AuthCredentialsValidatorType) => {
     try {
-      setError(null)
+      setError(null);
       console.log("Sending request with data:", data);
-      const response = await axios.post("http://localhost:3000/auth", data, {
+      const response = await axios.post("http://localhost:3000/api/auth", data, {
         withCredentials: true,
         headers: {
           "Content-Type": "application/json",
@@ -31,35 +35,20 @@ const Login = () => {
         },
       });
 
-      if(response.data){
-        console.log("Login Successful", response.data)
-
-        // Check if response contains tokens
-        if (response.data.accessToken && response.data.refreshToken) {
-          const {accessToken, refreshToken} = response.data;
-          console.log("Tokens received");
-          
-          // Store tokens in localStorage
-          localStorage.setItem("accessToken", accessToken);
-          localStorage.setItem("refreshToken", refreshToken);
-        } else if (response.data.user) {
-          // If no tokens but we have user data, store that directly
-          console.log("User data received without tokens, storing user data directly");
-          localStorage.setItem("user", JSON.stringify(response.data.user));
-        }
-        
-        // Simply reload the page to force a complete re-render of all components
-        const redirectUrl = response.data.redirect || '/home';
-        window.location.href = redirectUrl;
-        return;
+      if(response.status === 200){
+        navigate('/home')
+      } else{
+        navigate('login')
       }
-      
     } catch (error) {
       console.error(error);
-      if(axios.isAxiosError(error) ){
-        setError(error.response?.data?.message || "Login failed. Please check your credentials")
-      } else{
-        setError("An unexpected error occured")
+      if (axios.isAxiosError(error)) {
+        setError(
+          error.response?.data?.message ||
+            "Login failed. Please check your credentials"
+        );
+      } else {
+        setError("An unexpected error occured");
       }
     }
   };
@@ -99,10 +88,8 @@ const Login = () => {
         <p>
           Don't have an account? <a href="/signup">Sign Up</a>
         </p>
-        
-        {error && (
-          <div className="text-red-500 text-sm mt-2">{error}</div>
-        )}
+
+        {error && <div className="text-red-500 text-sm mt-2">{error}</div>}
       </form>
     </div>
   );
