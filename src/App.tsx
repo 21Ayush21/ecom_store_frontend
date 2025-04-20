@@ -8,6 +8,8 @@ import Home from "./pages/Home";
 import Landing from "./pages/Landing";
 import ProtectedRoute from "./app-components/ProtectedRoute";
 import { UploadProduct } from "./pages/UploadProduct";
+import { GetProduct } from "./pages/GetProducts";
+import ProductList from "./pages/ProductList";
 
 export default function App() {
   return (
@@ -21,6 +23,8 @@ export default function App() {
       <Route path="/home" element={<Home/>}/>
       <Route path='/' element={<Landing/>}/>
       <Route path='/upload-product' element={<UploadProduct/>}/>
+      <Route path='/get-product' element={<GetProduct/>}/>
+      <Route path='/user-products' element={<ProductList/>}/>
     </Routes>
     
     </>

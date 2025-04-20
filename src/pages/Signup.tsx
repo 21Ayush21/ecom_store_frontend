@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import axios from "axios";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AuthCredentialsValidator } from "@/lib/AuthCredentialsValidator";
+import { AuthCredentialsValidator } from "@/lib/ZodSchemas";
 import { cn } from "@/lib/utils";
 import { Select ,SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import { z } from "zod";

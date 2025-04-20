@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { AuthCredentialsValidator } from "@/lib/AuthCredentialsValidator";
+import { useAuth } from "@/hooks/useAuth";
+import { AuthCredentialsValidator } from "@/lib/ZodSchemas";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
@@ -21,6 +22,7 @@ const Login = () => {
     resolver: zodResolver(AuthCredentialsValidator),
   });
 
+  const { refreshAuthStatus } = useAuth()
   const [error, setError] = useState<string | null>(null);
 
   const loginSubmit = async (data: AuthCredentialsValidatorType) => {
@@ -36,6 +38,7 @@ const Login = () => {
       });
 
       if(response.status === 200){
+        await refreshAuthStatus()
         navigate('/home')
       } else{
         navigate('login')

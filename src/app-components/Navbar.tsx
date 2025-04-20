@@ -43,11 +43,6 @@ const Navbar = () => {
                       {user.email}
                     </span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <span className="font-lato font-medium text-sm">
-                      Verified: {user.isVerified ? "Yes" : "No"}
-                    </span>
-                  </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem>
                     <Link to="/profile">
@@ -63,6 +58,14 @@ const Navbar = () => {
                         <Link to="/upload-product">
                           <span className="font-lato font-medium text-sm">
                             Upload Products
+                          </span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem>
+                        <Link to="/user-products">
+                          <span className="font-lato font-medium text-sm">
+                            Your Products
                           </span>
                         </Link>
                       </DropdownMenuItem>
